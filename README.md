@@ -1,4 +1,4 @@
-# Kuwait Restaurants
+# Kuwait Fine Dining
 
 
 ## Launch the site
