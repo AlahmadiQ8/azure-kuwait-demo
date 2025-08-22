@@ -3,3 +3,4 @@ sqlalchemy
 flask_sqlalchemy
 flask-cors
 flask-openapi3
+pydantic

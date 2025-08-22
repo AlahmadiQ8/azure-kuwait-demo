@@ -3,11 +3,14 @@ from models import db, Game, Publisher, Category
 from sqlalchemy.orm import Query
 from flask_openapi3.blueprint import APIBlueprint
 from flask_openapi3.models.tag import Tag
-
-
+from pydantic import BaseModel
 
 # Create a Blueprint for games routes
 games_bp = APIBlueprint('games', __name__, abp_tags=[Tag(name='Games', description='Operations related to games')])
+
+class GamePathModel(BaseModel):
+    """Path parameters for game endpoint."""
+    id: int
 
 def get_games_base_query() -> Query:
     return db.session.query(Game).join(
@@ -32,9 +35,10 @@ def get_games() -> Response:
     return jsonify(games_list)
 
 @games_bp.get('/api/games/<int:id>')
-def get_game(id: int) -> tuple[Response, int] | Response:
+def get_game(path: GamePathModel) -> tuple[Response, int] | Response:
+    """Get a specific game by ID with its publisher and category information."""
     # Use the base query and add filter for specific game
-    game_query = get_games_base_query().filter(Game.id == id).first()
+    game_query = get_games_base_query().filter(Game.id == path.id).first()
     
     # Return 404 if game not found
     if not game_query: 
