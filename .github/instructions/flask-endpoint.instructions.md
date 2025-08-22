@@ -16,6 +16,5 @@
 - Use the [test instructions](./python-tests.instructions.md) when creating tests
 
 ## Prototype files
-
-- [Endpoint prototype](../../server/routes/games.py)
-- [Tests prototype](../../server/tests/test_games.py)
+- [Endpoint prototype](../../server/routes/restaurants.py)
+- [Tests prototype](../../server/tests/test_restaurants.py)

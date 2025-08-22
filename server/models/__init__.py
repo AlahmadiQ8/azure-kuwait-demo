@@ -4,7 +4,7 @@ db = SQLAlchemy()
 
 # Import models after db is defined to avoid circular imports
 from .category import Category
-from .game import Game
+from .restaurant import Restaurant
 from .publisher import Publisher
 
 def init_db(app, testing: bool = False):

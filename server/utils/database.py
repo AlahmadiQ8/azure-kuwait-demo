@@ -30,4 +30,4 @@ def __get_connection_string():
     # Create the data directory if it doesn't exist
     os.makedirs(data_dir, exist_ok=True)
     
-    return f'sqlite:///{os.path.join(data_dir, "tailspin-toys.db")}'
+    return f'sqlite:///{os.path.join(data_dir, "kuwait-restaurants.db")}'

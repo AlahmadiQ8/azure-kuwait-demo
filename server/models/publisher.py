@@ -9,8 +9,8 @@ class Publisher(BaseModel):
     name = db.Column(db.String(100), nullable=False, unique=True)
     description = db.Column(db.Text)
     
-    # One-to-many relationship: one publisher has many games
-    games = relationship("Game", back_populates="publisher")
+    # One-to-many relationship: one publisher has many restaurants
+    restaurants = relationship("Restaurant", back_populates="publisher")
 
     @validates('name')
     def validate_name(self, key, name):
@@ -28,5 +28,5 @@ class Publisher(BaseModel):
             'id': self.id,
             'name': self.name,
             'description': self.description,
-            'game_count': len(self.games) if self.games else 0
+            'restaurant_count': len(self.restaurants) if self.restaurants else 0
         }

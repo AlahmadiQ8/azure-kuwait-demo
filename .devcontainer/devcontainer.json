@@ -1,5 +1,5 @@
 {
-  "name": "Tailspin Toys Dev Container",
+  "name": "Kuwait Fine Dining Dev Container",
   "image": "mcr.microsoft.com/devcontainers/universal:latest",
   "postCreateCommand": "./scripts/setup-env.sh",
   "customizations": {

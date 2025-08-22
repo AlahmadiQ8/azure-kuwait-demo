@@ -1,6 +1,6 @@
-# Tailspin Toys Crowd Funding Development Guidelines
+# Kuwait Fine Dining Development Guidelines
 
-This is a crowdfunding platform for games with a developer theme. The application uses a Flask backend API with SQLAlchemy ORM for database interactions, and an Astro/Svelte frontend with Tailwind CSS for styling. Please follow these guidelines when contributing:
+This is a restaurant directory for Kuwait with a culinary theme. It highlights local dining spots ranging from traditional Kuwaiti kitchens to modern fusion concepts. The application uses a Flask backend API with SQLAlchemy ORM for database interactions, and an Astro/Svelte frontend with Tailwind CSS for styling. Please follow these guidelines when contributing:
 
 ## Code standards
 

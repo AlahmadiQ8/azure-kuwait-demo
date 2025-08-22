@@ -67,5 +67,3 @@ msbuild.log
 msbuild.err
 msbuild.wrn
 
-# SQLite
-*.db

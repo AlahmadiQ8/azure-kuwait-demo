@@ -2,8 +2,8 @@ from . import db
 from .base import BaseModel
 from sqlalchemy.orm import validates, relationship
 
-class Game(BaseModel):
-    __tablename__ = 'games'
+class Restaurant(BaseModel):
+    __tablename__ = 'restaurants'
     
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(100), nullable=False)
@@ -14,13 +14,13 @@ class Game(BaseModel):
     category_id = db.Column(db.Integer, db.ForeignKey('categories.id'), nullable=False)
     publisher_id = db.Column(db.Integer, db.ForeignKey('publishers.id'), nullable=False)
     
-    # One-to-many relationships (many games belong to one category/publisher)
-    category = relationship("Category", back_populates="games")
-    publisher = relationship("Publisher", back_populates="games")
+    # One-to-many relationships (many restaurants belong to one category/publisher)
+    category = relationship("Category", back_populates="restaurants")
+    publisher = relationship("Publisher", back_populates="restaurants")
     
     @validates('title')
     def validate_name(self, key, name):
-        return self.validate_string_length('Game title', name, min_length=2)
+        return self.validate_string_length('Restaurant title', name, min_length=2)
     
     @validates('description')
     def validate_description(self, key, description):
@@ -29,7 +29,7 @@ class Game(BaseModel):
         return description
     
     def __repr__(self):
-        return f'<Game {self.title}, ID: {self.id}>'
+        return f'<Restaurant {self.title}, ID: {self.id}>'
 
     def to_dict(self):
         return {
