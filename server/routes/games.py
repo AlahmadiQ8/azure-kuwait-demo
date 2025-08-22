@@ -1,9 +1,13 @@
-from flask import jsonify, Response, Blueprint
+from flask import jsonify, Response
 from models import db, Game, Publisher, Category
 from sqlalchemy.orm import Query
+from flask_openapi3.blueprint import APIBlueprint
+from flask_openapi3.models.tag import Tag
+
+
 
 # Create a Blueprint for games routes
-games_bp = Blueprint('games', __name__)
+games_bp = APIBlueprint('games', __name__, abp_tags=[Tag(name='Games', description='Operations related to games')])
 
 def get_games_base_query() -> Query:
     return db.session.query(Game).join(
@@ -16,8 +20,9 @@ def get_games_base_query() -> Query:
         isouter=True
     )
 
-@games_bp.route('/api/games', methods=['GET'])
+@games_bp.get('/api/games')
 def get_games() -> Response:
+    """Get all games with their publisher and category information."""
     # Use the base query for all games
     games_query = get_games_base_query().all()
     
@@ -26,7 +31,7 @@ def get_games() -> Response:
     
     return jsonify(games_list)
 
-@games_bp.route('/api/games/<int:id>', methods=['GET'])
+@games_bp.get('/api/games/<int:id>')
 def get_game(id: int) -> tuple[Response, int] | Response:
     # Use the base query and add filter for specific game
     game_query = get_games_base_query().filter(Game.id == id).first()
