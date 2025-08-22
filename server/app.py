@@ -1,5 +1,4 @@
 import os
-from flask import Flask
 from models import init_db
 from routes.games import games_bp
 from utils.database import init_db
