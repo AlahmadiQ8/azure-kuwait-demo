@@ -12,8 +12,8 @@ class TestPublishersRoutes(unittest.TestCase):
     # Test data as complete objects
     TEST_DATA: Dict[str, Any] = {
         "publishers": [
-            {"name": "DevGames Inc", "description": "Leading developer of DevOps-themed games"},
-            {"name": "Scrum Masters", "description": "Creating agile methodology board games"}
+            {"name": "شركة ألعاب المطورين", "description": "الرائدة في تطوير ألعاب بموضوع DevOps"},
+            {"name": "أساتذة سكرام", "description": "إنشاء ألعاب لوحية لمنهجية أجايل"}
         ]
     }
     
