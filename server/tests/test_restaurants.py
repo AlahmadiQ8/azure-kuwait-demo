@@ -9,24 +9,24 @@ class TestRestaurantsRoutes(unittest.TestCase):
     # Test data as complete objects
     TEST_DATA: Dict[str, Any] = {
         "publishers": [
-            {"name": "Alghaner Group"},
-            {"name": "Mais Alghanem"}
+            {"name": "مجموعة الغانم"},
+            {"name": "مجموعة الخليج"}
         ],
         "categories": [
-            {"name": "Lebanese"},
-            {"name": "Japanese"}
+            {"name": "لبناني"},
+            {"name": "ياباني"}
         ],
         "restaurants": [
             {
-                "title": "Mais Alghanim",
-                "description": "Renowned Lebanese-Arabic grill spot near Kuwait Towers, rated 4.5 on Talabat with popular dishes like Tabouleh, Hummus, Family Savers Meal and Arayes meat.",
+                "title": "مطعم الغانم",
+                "description": "مطعم لبناني مشهور بالمشاوي العربية قرب أبراج الكويت، حاصل على تقييم 4.5 على تطبيق طلبات مع أطباق شعبية مثل التبولة والحمص ووجبة العائلة والعرايس باللحم",
                 "publisher_index": 0,
                 "category_index": 0,
                 "star_rating": 4.5
             },
             {
-                "title": "White Robata",
-                "description": "Highly rated at Wanderlog for charcoal-grilled Japanese fusion dishes in a sleek setting at Sheikh Jaber Al-Ahmed Cultural Centre",
+                "title": "مطعم روباتا الأبيض",
+                "description": "مطعم ياباني متميز بأطباق الشواء على الفحم في أجواء عصرية في مركز الشيخ جابر الأحمد الثقافي، حاصل على تقييمات عالية",
                 "publisher_index": 1,
                 "category_index": 1,
                 "star_rating": 4.2
@@ -172,8 +172,8 @@ class TestRestaurantsRoutes(unittest.TestCase):
         """Test successful creation of a restaurant"""
         # Arrange
         new_restaurant = {
-            "title": "New Test Restaurant",
-            "description": "A new test restaurant with great food and atmosphere",
+            "title": "مطعم الاختبار الجديد",
+            "description": "مطعم تجريبي جديد مع طعام رائع وأجواء مميزة",
             "category_id": 1,
             "publisher_id": 1,
             "star_rating": 4.0
@@ -199,8 +199,8 @@ class TestRestaurantsRoutes(unittest.TestCase):
         """Test creation of restaurant with invalid publisher ID"""
         # Arrange
         new_restaurant = {
-            "title": "New Test Restaurant",
-            "description": "A new test restaurant with great food",
+            "title": "مطعم الاختبار الجديد",
+            "description": "مطعم تجريبي جديد مع طعام رائع",
             "category_id": 1,
             "publisher_id": 999,  # Invalid publisher ID
             "star_rating": 4.0
@@ -222,8 +222,8 @@ class TestRestaurantsRoutes(unittest.TestCase):
         """Test creation of restaurant with invalid category ID"""
         # Arrange
         new_restaurant = {
-            "title": "New Test Restaurant",
-            "description": "A new test restaurant with great food",
+            "title": "مطعم الاختبار الجديد",
+            "description": "مطعم تجريبي جديد مع طعام رائع",
             "category_id": 999,  # Invalid category ID
             "publisher_id": 1,
             "star_rating": 4.0
@@ -245,8 +245,8 @@ class TestRestaurantsRoutes(unittest.TestCase):
         """Test creation of restaurant with invalid title"""
         # Arrange
         new_restaurant = {
-            "title": "A",  # Too short (less than 2 chars)
-            "description": "A new test restaurant with great food",
+            "title": "ا",  # Too short (less than 2 chars) - single Arabic letter
+            "description": "مطعم تجريبي جديد مع طعام رائع",
             "category_id": 1,
             "publisher_id": 1,
             "star_rating": 4.0
@@ -273,7 +273,7 @@ class TestRestaurantsRoutes(unittest.TestCase):
         
         # Arrange
         update_data = {
-            "title": "Updated Restaurant Name",
+            "title": "اسم المطعم المحدث",
             "star_rating": 4.8
         }
         
@@ -293,7 +293,7 @@ class TestRestaurantsRoutes(unittest.TestCase):
     def test_update_restaurant_not_found(self) -> None:
         """Test update of non-existent restaurant"""
         # Arrange
-        update_data = {"title": "Updated Name"}
+        update_data = {"title": "اسم محدث"}
         
         # Act
         response = self.client.put(
