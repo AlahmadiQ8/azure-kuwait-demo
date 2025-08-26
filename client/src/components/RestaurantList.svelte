@@ -1,5 +1,7 @@
 <script lang="ts">
     import { onMount } from "svelte";
+    import { currentLanguage } from "../utils/languageStore.js";
+    import { getTranslation, type Language } from "../utils/i18n.js";
 
     interface Restaurant {
         id: number;
@@ -12,6 +14,8 @@
     export let restaurants: Restaurant[] = [];
     let loading = true;
     let error: string | null = null;
+
+    $: t = (key: keyof import('../utils/i18n.js').Translation) => getTranslation($currentLanguage, key);
 
     const fetchRestaurants = async () => {
         loading = true;
@@ -35,7 +39,7 @@
 </script>
 
 <div>
-    <h2 class="text-2xl font-medium mb-6 text-slate-100">Featured Restaurants</h2>
+    <h2 class="text-2xl font-medium mb-6 text-slate-100">{t('featuredRestaurants')}</h2>
     
     {#if loading}
         <!-- loading animation -->
@@ -63,7 +67,7 @@
     {:else if restaurants.length === 0}
         <!-- no restaurants found -->
         <div class="text-center py-12 bg-slate-800/50 backdrop-blur-sm rounded-xl border border-slate-700">
-            <p class="text-slate-300">No restaurants available at the moment.</p>
+            <p class="text-slate-300">{t('noRestaurantsAvailable')}</p>
         </div>
     {:else}
         <!-- restaurant list -->
@@ -99,7 +103,7 @@
                             <p class="text-slate-400 mb-4 text-sm line-clamp-2" data-testid="restaurant-description">{restaurant.description}</p>
                             
                             <div class="mt-4 text-sm text-blue-400 font-medium flex items-center">
-                                <span>View details</span>
+                                <span>{t('viewDetails')}</span>
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-1 transform transition-transform duration-300 group-hover:translate-x-2" viewBox="0 0 20 20" fill="currentColor">
                                     <path fill-rule="evenodd" d="M12.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-2.293-2.293a1 1 0 010-1.414z" clip-rule="evenodd" />
                                 </svg>

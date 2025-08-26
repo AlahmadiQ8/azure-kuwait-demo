@@ -6,14 +6,14 @@ import "../styles/global.css";
 <Layout title="About - Kuwait Fine Dining">
   <section class="max-w-5xl mx-auto px-4 py-8">
     <div class="bg-slate-800/70 backdrop-blur-sm border border-slate-700 rounded-xl shadow-lg p-8 transition-colors duration-300">
-      <h2 class="text-blue-400 text-4xl mb-8 pb-3 border-b border-slate-600 font-bold">About Kuwait Fine Dining</h2>
+      <h2 class="text-blue-400 text-4xl mb-8 pb-3 border-b border-slate-600 font-bold" data-i18n="aboutTitle">About Kuwait Fine Dining</h2>
       
       <div class="space-y-6">
-        <p class="text-lg leading-relaxed text-slate-300">
+        <p class="text-lg leading-relaxed text-slate-300" data-i18n="aboutDescription1">
           Kuwait Fine Dinging is a restaurant directory for Kuwait with a culinary theme. 
         </p>
         
-        <p class="text-lg leading-relaxed text-slate-300">
+        <p class="text-lg leading-relaxed text-slate-300" data-i18n="aboutDescription2">
           It highlights local dining spots ranging from traditional Kuwaiti kitchens to modern fusion concepts. Each listing showcases the restaurant’s specialties, atmosphere, and story—making it easy to explore, compare, and discover great places to eat across Kuwait.
         </p>
       </div>
@@ -23,9 +23,38 @@ import "../styles/global.css";
           <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
             <path fill-rule="evenodd" d="M9.707 14.707a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 1.414L7.414 9H15a1 1 0 110 2H7.414l2.293 2.293a1 1 0 010 1.414z" clip-rule="evenodd" />
           </svg>
-          Back to Restaurants
+          <span data-i18n="backToRestaurants">Back to Restaurants</span>
         </a>
       </div>
     </div>
   </section>
 </Layout>
+
+<script>
+  import { getDefaultLanguage, getTranslation, type Language } from '../utils/i18n.js';
+  
+  // Handle translation updates
+  function updateTranslations() {
+    const currentLang = getDefaultLanguage();
+    const elementsToTranslate = document.querySelectorAll('[data-i18n]');
+    
+    elementsToTranslate.forEach((element) => {
+      const key = element.getAttribute('data-i18n');
+      if (key) {
+        element.textContent = getTranslation(currentLang as Language, key as keyof import('../utils/i18n.js').Translation);
+      }
+    });
+    
+    // Update page title
+    const translatedTitle = currentLang === 'ar' 
+      ? `${getTranslation(currentLang as Language, 'about')} - ${getTranslation(currentLang as Language, 'siteTitle')}`
+      : 'About - Kuwait Fine Dining';
+    document.title = translatedTitle;
+  }
+  
+  // Initial translation
+  updateTranslations();
+  
+  // Listen for language changes
+  window.addEventListener('app:languagechange', updateTranslations);
+</script>
