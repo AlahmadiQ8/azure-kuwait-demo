@@ -1,8 +1,18 @@
+# Restaurant model for the Kuwait Fine Dining directory application.
+# This module defines the Restaurant SQLAlchemy model with validation methods
+# and relationships to Publisher and Category models.
+
 from . import db
 from .base import BaseModel
 from sqlalchemy.orm import validates, relationship
 
 class Restaurant(BaseModel):
+    """Model representing a restaurant in the Kuwait Fine Dining directory.
+    
+    This class defines the structure and validation rules for restaurant entities,
+    including relationships to Publisher and Category models, and methods for
+    data validation and serialization.
+    """
     __tablename__ = 'restaurants'
     
     id = db.Column(db.Integer, primary_key=True)
@@ -19,19 +29,54 @@ class Restaurant(BaseModel):
     publisher = relationship("Publisher", back_populates="restaurants")
     
     @validates('title')
-    def validate_name(self, key, name):
+    def validate_name(self, key: str, name: str) -> str:
+        """Validate the restaurant title field.
+        
+        Args:
+            key: The field name being validated
+            name: The title value to validate
+            
+        Returns:
+            The validated title string
+            
+        Raises:
+            ValueError: If the title is invalid (too short, empty, etc.)
+        """
         return self.validate_string_length('Restaurant title', name, min_length=2)
     
     @validates('description')
-    def validate_description(self, key, description):
+    def validate_description(self, key: str, description: str) -> str:
+        """Validate the restaurant description field.
+        
+        Args:
+            key: The field name being validated
+            description: The description value to validate
+            
+        Returns:
+            The validated description string or None
+            
+        Raises:
+            ValueError: If the description is invalid when provided
+        """
         if description is not None:
             return self.validate_string_length('Description', description, min_length=10, allow_none=True)
         return description
     
-    def __repr__(self):
+    def __repr__(self) -> str:
+        """Return a string representation of the Restaurant object.
+        
+        Returns:
+            A formatted string with restaurant title and ID
+        """
         return f'<Restaurant {self.title}, ID: {self.id}>'
 
-    def to_dict(self):
+    def to_dict(self) -> dict:
+        """Convert the Restaurant object to a dictionary representation.
+        
+        Returns:
+            A dictionary containing the restaurant data including
+            associated publisher and category information
+        """
         return {
             'id': self.id,
             'title': self.title,

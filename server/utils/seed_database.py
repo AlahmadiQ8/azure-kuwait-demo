@@ -1,3 +1,7 @@
+# Database seeding utilities for the Kuwait Fine Dining directory application.
+# This module provides functions to populate the database with initial restaurant data
+# from CSV files, creating categories, publishers, and restaurants with relationships.
+
 import csv
 import os
 import random

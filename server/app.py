@@ -1,3 +1,7 @@
+# Main Flask application entry point for the Kuwait Fine Dining directory.
+# This module initializes the Flask application using OpenAPI, configures the database,
+# and registers API blueprints for restaurant management functionality.
+
 import os
 from models import init_db
 from routes.restaurants import restaurants_bp

@@ -1,3 +1,7 @@
+# Models package initialization for the Kuwait Fine Dining directory application.
+# This module sets up the SQLAlchemy database instance and initializes all model classes.
+# It handles the database configuration and provides the init_db function for app setup.
+
 from flask_sqlalchemy import SQLAlchemy
 
 db = SQLAlchemy()

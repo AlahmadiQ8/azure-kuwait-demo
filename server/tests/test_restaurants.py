@@ -1,3 +1,7 @@
+# Unit tests for restaurant API routes in the Kuwait Fine Dining directory application.
+# This module contains comprehensive test cases for the restaurant endpoints,
+# validating API responses, data structure, and error handling.
+
 import unittest
 import json
 from typing import Dict, List, Any, Optional

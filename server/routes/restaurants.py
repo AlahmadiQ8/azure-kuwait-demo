@@ -1,3 +1,7 @@
+# Restaurant API routes for the Kuwait Fine Dining directory application.
+# This module defines REST API endpoints for managing restaurant data,
+# including endpoints for retrieving all restaurants and individual restaurant details.
+
 from flask import jsonify, Response
 from models import db, Restaurant, Publisher, Category
 from sqlalchemy.orm import Query
@@ -13,6 +17,12 @@ class RestaurantPathModel(BaseModel):
     id: int
 
 def get_restaurants_base_query() -> Query:
+    """Create the base query for restaurants with joined publisher and category data.
+    
+    Returns:
+        A SQLAlchemy Query object with Restaurant joined to Publisher and Category
+        using outer joins to include restaurants even if they lack publisher/category data
+    """
     return db.session.query(Restaurant).join(
         Publisher, 
         Restaurant.publisher_id == Publisher.id, 
