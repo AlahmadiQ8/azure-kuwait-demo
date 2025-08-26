@@ -10,7 +10,7 @@ const { title = "Kuwait Fine Dining" } = Astro.props;
 ---
 
 <!doctype html>
-<html lang="en" class="dark">
+<html lang="en" class="dark" data-lang="en">
     <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width" />
@@ -21,6 +21,8 @@ const { title = "Kuwait Fine Dining" } = Astro.props;
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
         <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+        <!-- Arabic fonts support -->
+        <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet" />
     </head>
     <body class="min-h-screen bg-slate-900 text-white transition-colors duration-300 m-0 w-full h-full font-sans">
         <Header />
@@ -35,6 +37,7 @@ const { title = "Kuwait Fine Dining" } = Astro.props;
 <style is:global>
     :root {
         --font-sans: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+        --font-arabic: 'Noto Sans Arabic', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     }
     
     html {
@@ -42,8 +45,65 @@ const { title = "Kuwait Fine Dining" } = Astro.props;
         scroll-behavior: smooth;
     }
     
+    /* Arabic language support */
+    html[data-lang="ar"] {
+        font-family: var(--font-arabic);
+        direction: rtl;
+    }
+    
+    html[data-lang="ar"] .ltr {
+        direction: ltr;
+    }
+    
+    /* Responsive Arabic text adjustments */
+    html[data-lang="ar"] body {
+        text-align: right;
+    }
+    
+    html[data-lang="ar"] .text-center {
+        text-align: center !important;
+    }
+    
+    html[data-lang="ar"] .text-left {
+        text-align: right !important;
+    }
+    
+    html[data-lang="ar"] .text-right {
+        text-align: left !important;
+    }
+    
+    /* Flip margins and padding for RTL */
+    html[data-lang="ar"] .ml-1 { margin-right: 0.25rem; margin-left: 0; }
+    html[data-lang="ar"] .ml-2 { margin-right: 0.5rem; margin-left: 0; }
+    html[data-lang="ar"] .mr-1 { margin-left: 0.25rem; margin-right: 0; }
+    html[data-lang="ar"] .mr-2 { margin-left: 0.5rem; margin-right: 0; }
+    html[data-lang="ar"] .mr-4 { margin-left: 1rem; margin-right: 0; }
+    
+    html[data-lang="ar"] .pl-4 { padding-right: 1rem; padding-left: 0; }
+    html[data-lang="ar"] .pr-4 { padding-left: 1rem; padding-right: 0; }
+    
     body {
         -webkit-font-smoothing: antialiased;
         -moz-osx-font-smoothing: grayscale;
     }
 </style>
+
+<script>
+    // Handle language switching and RTL support
+    import { getDefaultLanguage } from '../utils/i18n.js';
+    
+    function updateLanguage() {
+        const lang = getDefaultLanguage();
+        document.documentElement.setAttribute('data-lang', lang);
+        document.documentElement.setAttribute('lang', lang);
+    }
+    
+    // Set initial language
+    updateLanguage();
+    
+    // Listen for language changes
+    window.addEventListener('languagechange', updateLanguage);
+    
+    // Custom event for manual language changes
+    window.addEventListener('app:languagechange', updateLanguage);
+</script>

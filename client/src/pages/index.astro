@@ -7,10 +7,40 @@ import "../styles/global.css";
 <Layout title="Kuwait Fine Dining - Find your new favorite restaurant!">
   <div class="py-8">
     <div class="max-w-3xl mb-10">
-      <h1 class="text-4xl font-bold mb-4 text-slate-100">Welcome to Kuwait Fine Dining</h1>
-      <p class="text-xl text-slate-300">Find your next restaurant in Kuwait!</p>
+      <h1 class="text-4xl font-bold mb-4 text-slate-100" data-i18n="welcome">Welcome to Kuwait Fine Dining</h1>
+      <p class="text-xl text-slate-300" data-i18n="welcomeSubtext">Find your next restaurant in Kuwait!</p>
     </div>
     
     <RestaurantList client:only="svelte" />
   </div>
 </Layout>
+
+<script>
+  import { getDefaultLanguage, getTranslation, type Language } from '../utils/i18n.js';
+  
+  // Handle translation updates
+  function updateTranslations() {
+    const currentLang = getDefaultLanguage();
+    const elementsToTranslate = document.querySelectorAll('[data-i18n]');
+    
+    elementsToTranslate.forEach((element) => {
+      const key = element.getAttribute('data-i18n');
+      if (key) {
+        element.textContent = getTranslation(currentLang as Language, key as keyof import('../utils/i18n.js').Translation);
+      }
+    });
+    
+    // Update page title
+    const titleKey = currentLang === 'ar' ? 'siteTitle' + ' - ' + 'welcomeSubtext' : 'Kuwait Fine Dining - Find your new favorite restaurant!';
+    const translatedTitle = currentLang === 'ar' 
+      ? `${getTranslation(currentLang as Language, 'siteTitle')} - ${getTranslation(currentLang as Language, 'welcomeSubtext')}`
+      : 'Kuwait Fine Dining - Find your new favorite restaurant!';
+    document.title = translatedTitle;
+  }
+  
+  // Initial translation
+  updateTranslations();
+  
+  // Listen for language changes
+  window.addEventListener('app:languagechange', updateTranslations);
+</script>

@@ -1,5 +1,5 @@
 ---
-// Import any necessary dependencies
+import LanguageSwitcher from './LanguageSwitcher.svelte';
 ---
 
 <header class="bg-blue-500 dark:bg-blue-700 text-white p-4 shadow-md transition-colors duration-300">
@@ -13,17 +13,24 @@
         </button>
         <nav id="menu" class="hidden absolute left-0 mt-2 w-48 bg-white dark:bg-slate-800 text-slate-800 dark:text-white rounded shadow-lg z-10 transition-colors duration-300">
           <ul class="py-1">
-            <li><a href="/" class="block px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-700">Home</a></li>
-            <li><a href="/about" class="block px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-700">About</a></li>
+            <li><a href="/" class="block px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-700" data-i18n="home">Home</a></li>
+            <li><a href="/about" class="block px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-700" data-i18n="about">About</a></li>
           </ul>
         </nav>
       </div>
-      <h1 class="text-xl font-bold"><a href="/" class="hover:underline">Kuwait Fine Dining</a></h1>
+      <h1 class="text-xl font-bold"><a href="/" class="hover:underline" data-i18n="siteTitle">Kuwait Fine Dining</a></h1>
+    </div>
+    
+    <!-- Language Switcher -->
+    <div class="flex items-center">
+      <LanguageSwitcher client:load />
     </div>
   </div>
 </header>
 
 <script>
+  import { getDefaultLanguage, getTranslation, type Language } from '../utils/i18n.js';
+  
   // Toggle menu visibility when hamburger is clicked
   const menuToggle = document.getElementById('menu-toggle');
   const menu = document.getElementById('menu');
@@ -41,4 +48,32 @@
       }
     });
   }
+  
+  // Handle translation updates
+  function updateTranslations() {
+    const currentLang = getDefaultLanguage();
+    const elementsToTranslate = document.querySelectorAll('[data-i18n]');
+    
+    elementsToTranslate.forEach((element) => {
+      const key = element.getAttribute('data-i18n');
+      if (key) {
+        element.textContent = getTranslation(currentLang as Language, key as keyof import('../utils/i18n.js').Translation);
+      }
+    });
+  }
+  
+  // Initial translation
+  updateTranslations();
+  
+  // Listen for language changes
+  window.addEventListener('app:languagechange', updateTranslations);
+  
+  // Watch for storage changes (from other tabs)
+  window.addEventListener('storage', (e) => {
+    if (e.key === 'preferred-language') {
+      updateTranslations();
+      // Dispatch custom event for other components
+      window.dispatchEvent(new CustomEvent('app:languagechange'));
+    }
+  });
 </script>
