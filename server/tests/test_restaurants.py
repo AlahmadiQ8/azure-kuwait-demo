@@ -168,5 +168,178 @@ class TestRestaurantsRoutes(unittest.TestCase):
         self.assertEqual(response.status_code, 404)
         self.assertEqual(data['error'], "Restaurant not found")
 
+    def test_create_restaurant_success(self) -> None:
+        """Test successful creation of a new restaurant"""
+        # Arrange
+        new_restaurant = {
+            "title": "New Test Restaurant",
+            "description": "A fantastic new restaurant for testing purposes only",
+            "star_rating": 3.8,
+            "category_id": 1,  # Use existing category
+            "publisher_id": 1  # Use existing publisher
+        }
+        
+        # Act
+        response = self.client.post(
+            self.RESTAURANTS_API_PATH,
+            data=json.dumps(new_restaurant),
+            content_type='application/json'
+        )
+        data = self._get_response_data(response)
+        
+        # Assert
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(data['title'], new_restaurant['title'])
+        self.assertEqual(data['description'], new_restaurant['description'])
+        self.assertEqual(data['starRating'], new_restaurant['star_rating'])
+        self.assertIsNotNone(data['id'])
+        self.assertIsNotNone(data['category'])
+        self.assertIsNotNone(data['publisher'])
+
+    def test_create_restaurant_invalid_category(self) -> None:
+        """Test creation with non-existent category"""
+        # Arrange
+        new_restaurant = {
+            "title": "Test Restaurant",
+            "description": "A restaurant with invalid category",
+            "category_id": 999,  # Non-existent category
+            "publisher_id": 1
+        }
+        
+        # Act
+        response = self.client.post(
+            self.RESTAURANTS_API_PATH,
+            data=json.dumps(new_restaurant),
+            content_type='application/json'
+        )
+        data = self._get_response_data(response)
+        
+        # Assert
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(data['error'], "Category not found")
+
+    def test_create_restaurant_invalid_publisher(self) -> None:
+        """Test creation with non-existent publisher"""
+        # Arrange
+        new_restaurant = {
+            "title": "Test Restaurant",
+            "description": "A restaurant with invalid publisher",
+            "category_id": 1,
+            "publisher_id": 999  # Non-existent publisher
+        }
+        
+        # Act
+        response = self.client.post(
+            self.RESTAURANTS_API_PATH,
+            data=json.dumps(new_restaurant),
+            content_type='application/json'
+        )
+        data = self._get_response_data(response)
+        
+        # Assert
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(data['error'], "Publisher not found")
+
+    def test_update_restaurant_success(self) -> None:
+        """Test successful update of an existing restaurant"""
+        # Get existing restaurant ID
+        response = self.client.get(self.RESTAURANTS_API_PATH)
+        restaurants = self._get_response_data(response)
+        restaurant_id = restaurants[0]['id']
+        
+        # Arrange update data
+        update_data = {
+            "title": "Updated Restaurant Title",
+            "star_rating": 4.9
+        }
+        
+        # Act
+        response = self.client.put(
+            f'{self.RESTAURANTS_API_PATH}/{restaurant_id}',
+            data=json.dumps(update_data),
+            content_type='application/json'
+        )
+        data = self._get_response_data(response)
+        
+        # Assert
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(data['title'], update_data['title'])
+        self.assertEqual(data['starRating'], update_data['star_rating'])
+        self.assertIsNotNone(data['id'])
+
+    def test_update_restaurant_not_found(self) -> None:
+        """Test update of non-existent restaurant"""
+        # Arrange
+        update_data = {
+            "title": "Updated Title"
+        }
+        
+        # Act
+        response = self.client.put(
+            f'{self.RESTAURANTS_API_PATH}/999',
+            data=json.dumps(update_data),
+            content_type='application/json'
+        )
+        data = self._get_response_data(response)
+        
+        # Assert
+        self.assertEqual(response.status_code, 404)
+        self.assertEqual(data['error'], "Restaurant not found")
+
+    def test_update_restaurant_invalid_category(self) -> None:
+        """Test update with non-existent category"""
+        # Get existing restaurant ID
+        response = self.client.get(self.RESTAURANTS_API_PATH)
+        restaurants = self._get_response_data(response)
+        restaurant_id = restaurants[0]['id']
+        
+        # Arrange update data with invalid category
+        update_data = {
+            "category_id": 999
+        }
+        
+        # Act
+        response = self.client.put(
+            f'{self.RESTAURANTS_API_PATH}/{restaurant_id}',
+            data=json.dumps(update_data),
+            content_type='application/json'
+        )
+        data = self._get_response_data(response)
+        
+        # Assert
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(data['error'], "Category not found")
+
+    def test_delete_restaurant_success(self) -> None:
+        """Test successful deletion of a restaurant"""
+        # Get existing restaurant ID
+        response = self.client.get(self.RESTAURANTS_API_PATH)
+        restaurants = self._get_response_data(response)
+        restaurant_id = restaurants[0]['id']
+        original_title = restaurants[0]['title']
+        
+        # Act
+        response = self.client.delete(f'{self.RESTAURANTS_API_PATH}/{restaurant_id}')
+        data = self._get_response_data(response)
+        
+        # Assert
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(data['message'], "Restaurant deleted successfully")
+        self.assertEqual(data['restaurant']['title'], original_title)
+        
+        # Verify restaurant is actually deleted
+        response = self.client.get(f'{self.RESTAURANTS_API_PATH}/{restaurant_id}')
+        self.assertEqual(response.status_code, 404)
+
+    def test_delete_restaurant_not_found(self) -> None:
+        """Test deletion of non-existent restaurant"""
+        # Act
+        response = self.client.delete(f'{self.RESTAURANTS_API_PATH}/999')
+        data = self._get_response_data(response)
+        
+        # Assert
+        self.assertEqual(response.status_code, 404)
+        self.assertEqual(data['error'], "Restaurant not found")
+
 if __name__ == '__main__':
     unittest.main()
