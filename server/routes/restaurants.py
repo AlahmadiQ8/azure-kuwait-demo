@@ -1,4 +1,4 @@
-from flask import jsonify, Response
+from flask import jsonify, Response, request
 from models import db, Restaurant, Publisher, Category
 from sqlalchemy.orm import Query
 from flask_openapi3.blueprint import APIBlueprint
@@ -25,12 +25,24 @@ def get_restaurants_base_query() -> Query:
 
 @restaurants_bp.get('/api/restaurants')
 def get_restaurants() -> Response:
-    """Get all restaurants with their publisher and category information."""
-    # Use the base query for all restaurants
-    restaurants_query = get_restaurants_base_query().all()
+    """Get all restaurants with their publisher and category information.
+    
+    Query Parameters:
+        category (str, optional): Filter restaurants by category name
+    """
+    # Start with the base query
+    restaurants_query = get_restaurants_base_query()
+    
+    # Apply category filter if provided
+    category_name = request.args.get('category')
+    if category_name:
+        restaurants_query = restaurants_query.filter(Category.name.ilike(f'%{category_name}%'))
+    
+    # Execute the query
+    restaurants_result = restaurants_query.all()
     
     # Convert the results using the model's to_dict method
-    restaurants_list = [restaurant.to_dict() for restaurant in restaurants_query]
+    restaurants_list = [restaurant.to_dict() for restaurant in restaurants_result]
     
     return jsonify(restaurants_list)
 
