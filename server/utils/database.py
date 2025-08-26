@@ -1,3 +1,7 @@
+# Database utility functions for the Kuwait Fine Dining directory application.
+# This module provides database initialization and connection management utilities,
+# handling SQLite database setup and configuration for the Flask application.
+
 import os
 from models import init_db as models_init_db
 
