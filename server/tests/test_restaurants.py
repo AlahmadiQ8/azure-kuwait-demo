@@ -168,5 +168,61 @@ class TestRestaurantsRoutes(unittest.TestCase):
         self.assertEqual(response.status_code, 404)
         self.assertEqual(data['error'], "Restaurant not found")
 
+    def test_get_restaurants_filter_by_category(self) -> None:
+        """Test filtering restaurants by category name"""
+        # Act - Filter by Lebanese category
+        response = self.client.get(f'{self.RESTAURANTS_API_PATH}?category=Lebanese')
+        data = self._get_response_data(response)
+        
+        # Assert
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(data), 1)  # Should only return Lebanese restaurant
+        self.assertEqual(data[0]['category']['name'], 'Lebanese')
+        self.assertEqual(data[0]['title'], 'Mais Alghanim')
+
+    def test_get_restaurants_filter_by_category_case_insensitive(self) -> None:
+        """Test filtering restaurants by category name is case insensitive"""
+        # Act - Filter with lowercase
+        response = self.client.get(f'{self.RESTAURANTS_API_PATH}?category=japanese')
+        data = self._get_response_data(response)
+        
+        # Assert
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(data), 1)  # Should return Japanese restaurant
+        self.assertEqual(data[0]['category']['name'], 'Japanese')
+        self.assertEqual(data[0]['title'], 'White Robata')
+
+    def test_get_restaurants_filter_by_partial_category(self) -> None:
+        """Test filtering restaurants by partial category name"""
+        # Act - Filter with partial name
+        response = self.client.get(f'{self.RESTAURANTS_API_PATH}?category=Leb')
+        data = self._get_response_data(response)
+        
+        # Assert
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(data), 1)  # Should return Lebanese restaurant
+        self.assertEqual(data[0]['category']['name'], 'Lebanese')
+
+    def test_get_restaurants_filter_by_nonexistent_category(self) -> None:
+        """Test filtering restaurants by non-existent category returns empty list"""
+        # Act - Filter by non-existent category
+        response = self.client.get(f'{self.RESTAURANTS_API_PATH}?category=NonExistent')
+        data = self._get_response_data(response)
+        
+        # Assert
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(data), 0)  # Should return empty list
+        self.assertIsInstance(data, list)
+
+    def test_get_restaurants_no_filter_returns_all(self) -> None:
+        """Test that without category filter, all restaurants are returned"""
+        # Act - No filter parameter
+        response = self.client.get(self.RESTAURANTS_API_PATH)
+        data = self._get_response_data(response)
+        
+        # Assert
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(data), len(self.TEST_DATA["restaurants"]))  # Should return all restaurants
+
 if __name__ == '__main__':
     unittest.main()

@@ -5,6 +5,16 @@
         id: number;
         title: string;
         description: string;
+        publisher?: {
+            id: number;
+            name: string;
+        };
+        category?: {
+            id: number;
+            name: string;
+        };
+        starRating: number;
+        // Legacy support for components that expect flat structure
         publisher_name?: string;
         category_name?: string;
     }
@@ -12,13 +22,24 @@
     export let restaurants: Restaurant[] = [];
     let loading = true;
     let error: string | null = null;
+    let selectedCategory = '';
+    let availableCategories: string[] = [];
 
-    const fetchRestaurants = async () => {
+    const fetchRestaurants = async (category?: string) => {
         loading = true;
         try {
-            const response = await fetch('/api/restaurants');
+            const url = category 
+                ? `/api/restaurants?category=${encodeURIComponent(category)}`
+                : '/api/restaurants';
+            const response = await fetch(url);
             if(response.ok) {
-                restaurants = await response.json();
+                const data = await response.json();
+                // Transform data to include flat fields for backward compatibility
+                restaurants = data.map((restaurant: Restaurant) => ({
+                    ...restaurant,
+                    category_name: restaurant.category?.name,
+                    publisher_name: restaurant.publisher?.name
+                }));
             } else {
                 error = `Failed to fetch data: ${response.status} ${response.statusText}`;
             }
@@ -29,13 +50,58 @@
         }
     };
 
-    onMount(() => {
-        fetchRestaurants();
+    const fetchCategories = async () => {
+        try {
+            const response = await fetch('/api/restaurants');
+            if(response.ok) {
+                const data = await response.json();
+                const categories = new Set<string>();
+                data.forEach((restaurant: Restaurant) => {
+                    if (restaurant.category?.name) {
+                        categories.add(restaurant.category.name);
+                    }
+                });
+                availableCategories = Array.from(categories).sort();
+            }
+        } catch (err) {
+            console.error('Failed to fetch categories:', err);
+        }
+    };
+
+    const handleCategoryChange = async (event: Event) => {
+        const target = event.target as HTMLSelectElement;
+        selectedCategory = target.value;
+        await fetchRestaurants(selectedCategory || undefined);
+    };
+
+    onMount(async () => {
+        await Promise.all([
+            fetchRestaurants(),
+            fetchCategories()
+        ]);
     });
 </script>
 
 <div>
     <h2 class="text-2xl font-medium mb-6 text-slate-100">Featured Restaurants</h2>
+    
+    <!-- Category Filter -->
+    <div class="mb-6">
+        <label for="category-filter" class="block text-sm font-medium text-slate-300 mb-2">
+            Filter by Category
+        </label>
+        <select 
+            id="category-filter"
+            class="w-full max-w-xs bg-slate-800/60 backdrop-blur-sm border border-slate-700 rounded-lg px-3 py-2 text-slate-100 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none transition-colors"
+            bind:value={selectedCategory}
+            on:change={handleCategoryChange}
+        >
+            <option value="">All Categories</option>
+            {#each availableCategories as category}
+                <option value={category}>{category}</option>
+            {/each}
+        </select>
+    </div>
     
     {#if loading}
         <!-- loading animation -->
