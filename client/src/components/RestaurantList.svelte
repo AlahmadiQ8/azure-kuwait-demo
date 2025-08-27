@@ -13,6 +13,10 @@
     let loading = true;
     let error: string | null = null;
 
+    /**
+     * Fetches restaurant data from the API endpoint
+     * Sets loading state and handles error cases
+     */
     const fetchRestaurants = async () => {
         loading = true;
         try {

@@ -20,18 +20,46 @@ class Restaurant(BaseModel):
     
     @validates('title')
     def validate_name(self, key, name):
+        """Validate restaurant title field.
+        
+        Args:
+            key (str): The field name being validated
+            name (str): The title value to validate
+            
+        Returns:
+            str: The validated title value
+        """
         return self.validate_string_length('Restaurant title', name, min_length=2)
     
     @validates('description')
     def validate_description(self, key, description):
+        """Validate restaurant description field.
+        
+        Args:
+            key (str): The field name being validated
+            description (str): The description value to validate
+            
+        Returns:
+            str: The validated description value
+        """
         if description is not None:
             return self.validate_string_length('Description', description, min_length=10, allow_none=True)
         return description
     
     def __repr__(self):
+        """Return string representation of the restaurant.
+        
+        Returns:
+            str: String representation including restaurant title and ID
+        """
         return f'<Restaurant {self.title}, ID: {self.id}>'
 
     def to_dict(self):
+        """Convert restaurant instance to dictionary format.
+        
+        Returns:
+            dict: Dictionary representation of the restaurant with all fields
+        """
         return {
             'id': self.id,
             'title': self.title,

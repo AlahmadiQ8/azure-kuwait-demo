@@ -52,7 +52,11 @@
         }
     });
 
-    // Function to render stars based on rating
+    /**
+     * Renders a visual star rating based on numeric rating value
+     * @param {number | null} rating - The numeric rating (0-5) or null
+     * @returns {string} Visual representation of the rating with stars
+     */
     function renderStarRating(rating: number | null): string {
         if (rating === null) return "Not yet rated";
         
