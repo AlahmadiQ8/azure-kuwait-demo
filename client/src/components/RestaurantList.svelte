@@ -5,18 +5,35 @@
         id: number;
         title: string;
         description: string;
-        publisher_name?: string;
-        category_name?: string;
+        publisher?: {
+            id: number;
+            name: string;
+        };
+        category?: {
+            id: number;
+            name: string;
+        };
+        starRating?: number;
+    }
+
+    interface Category {
+        id: number;
+        name: string;
     }
 
     export let restaurants: Restaurant[] = [];
     let loading = true;
     let error: string | null = null;
+    let selectedCategory: string = '';
+    let availableCategories: Category[] = [];
 
-    const fetchRestaurants = async () => {
+    const fetchRestaurants = async (categoryFilter?: string) => {
         loading = true;
         try {
-            const response = await fetch('/api/restaurants');
+            const url = categoryFilter 
+                ? `/api/restaurants?category=${encodeURIComponent(categoryFilter)}`
+                : '/api/restaurants';
+            const response = await fetch(url);
             if(response.ok) {
                 restaurants = await response.json();
             } else {
@@ -29,13 +46,66 @@
         }
     };
 
+    const fetchCategories = async () => {
+        try {
+            // First, get all restaurants to extract unique categories
+            const response = await fetch('/api/restaurants');
+            if(response.ok) {
+                const allRestaurants: Restaurant[] = await response.json();
+                const categoryMap = new Map<number, Category>();
+                
+                allRestaurants.forEach(restaurant => {
+                    if (restaurant.category) {
+                        categoryMap.set(restaurant.category.id, restaurant.category);
+                    }
+                });
+                
+                availableCategories = Array.from(categoryMap.values())
+                    .sort((a, b) => a.name.localeCompare(b.name));
+            }
+        } catch (err) {
+            console.error('Error fetching categories:', err);
+        }
+    };
+
+    const handleCategoryChange = async (event: Event) => {
+        const target = event.target as HTMLSelectElement;
+        selectedCategory = target.value;
+        
+        if (selectedCategory === '') {
+            await fetchRestaurants();
+        } else {
+            await fetchRestaurants(selectedCategory);
+        }
+    };
+
     onMount(() => {
+        fetchCategories();
         fetchRestaurants();
     });
 </script>
 
 <div>
     <h2 class="text-2xl font-medium mb-6 text-slate-100">Featured Restaurants</h2>
+    
+    <!-- Category Filter -->
+    <div class="mb-6">
+        <label for="category-filter" class="block text-sm font-medium text-slate-300 mb-2">
+            Filter by Category
+        </label>
+        <select 
+            id="category-filter"
+            bind:value={selectedCategory}
+            on:change={handleCategoryChange}
+            class="w-full md:w-auto px-4 py-2 bg-slate-800/60 border border-slate-700 rounded-xl text-slate-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
+            data-testid="category-filter"
+        >
+            <option value="">All Categories</option>
+            {#each availableCategories as category}
+                <option value={category.id}>{category.name}</option>
+            {/each}
+        </select>
+    </div>
     
     {#if loading}
         <!-- loading animation -->
@@ -81,16 +151,16 @@
                         <div class="relative z-10">
                             <h3 class="text-xl font-semibold text-slate-100 mb-2 group-hover:text-blue-400 transition-colors" data-testid="restaurant-title">{restaurant.title}</h3>
                             
-                            {#if restaurant.category_name || restaurant.publisher_name}
+                            {#if restaurant.category || restaurant.publisher}
                                 <div class="flex gap-2 mb-3">
-                                    {#if restaurant.category_name}
+                                    {#if restaurant.category}
                                         <span class="text-xs font-medium px-2.5 py-0.5 rounded bg-blue-900/60 text-blue-300" data-testid="restaurant-category">
-                                            {restaurant.category_name}
+                                            {restaurant.category.name}
                                         </span>
                                     {/if}
-                                    {#if restaurant.publisher_name}
+                                    {#if restaurant.publisher}
                                         <span class="text-xs font-medium px-2.5 py-0.5 rounded bg-purple-900/60 text-purple-300" data-testid="restaurant-publisher">
-                                            {restaurant.publisher_name}
+                                            {restaurant.publisher.name}
                                         </span>
                                     {/if}
                                 </div>

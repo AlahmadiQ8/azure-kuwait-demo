@@ -1,9 +1,10 @@
-from flask import jsonify, Response
+from flask import jsonify, Response, request
 from models import db, Restaurant, Publisher, Category
 from sqlalchemy.orm import Query
 from flask_openapi3.blueprint import APIBlueprint
 from flask_openapi3.models.tag import Tag
 from pydantic import BaseModel
+from typing import Optional
 
 # Create a Blueprint for restaurants routes
 restaurants_bp = APIBlueprint('restaurants', __name__, abp_tags=[Tag(name='Restaurants', description='Operations related to restaurants')])
@@ -25,14 +26,34 @@ def get_restaurants_base_query() -> Query:
 
 @restaurants_bp.get('/api/restaurants')
 def get_restaurants() -> Response:
-    """Get all restaurants with their publisher and category information."""
-    # Use the base query for all restaurants
-    restaurants_query = get_restaurants_base_query().all()
+    """Get all restaurants with their publisher and category information.
+    
+    Query Parameters:
+        category (optional): Filter by category ID or category name
+    """
+    # Get the base query
+    restaurants_query = get_restaurants_base_query()
+    
+    # Apply category filter if provided
+    category_filter = request.args.get('category')
+    if category_filter:
+        # Try to filter by category ID first (if it's numeric)
+        try:
+            category_id = int(category_filter)
+            restaurants_query = restaurants_query.filter(Restaurant.category_id == category_id)
+        except ValueError:
+            # If not numeric, filter by category name (case-insensitive)
+            restaurants_query = restaurants_query.filter(
+                Category.name.ilike(f'%{category_filter}%')
+            )
+    
+    # Execute the query
+    restaurants_list = restaurants_query.all()
     
     # Convert the results using the model's to_dict method
-    restaurants_list = [restaurant.to_dict() for restaurant in restaurants_query]
+    restaurants_data = [restaurant.to_dict() for restaurant in restaurants_list]
     
-    return jsonify(restaurants_list)
+    return jsonify(restaurants_data)
 
 @restaurants_bp.get('/api/restaurants/<int:id>')
 def get_restaurant(path: RestaurantPathModel) -> tuple[Response, int] | Response:
