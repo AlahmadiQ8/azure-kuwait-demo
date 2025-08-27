@@ -13,6 +13,11 @@ class RestaurantPathModel(BaseModel):
     id: int
 
 def get_restaurants_base_query() -> Query:
+    """Get base query for restaurants with joined publisher and category data.
+    
+    Returns:
+        Query: SQLAlchemy query object with restaurants joined to publishers and categories
+    """
     return db.session.query(Restaurant).join(
         Publisher, 
         Restaurant.publisher_id == Publisher.id, 

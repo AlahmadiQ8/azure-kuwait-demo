@@ -78,6 +78,7 @@ def create_restaurants():
         print(f"Added {restaurant_count} restaurants with {len(categories)} categories and {len(publishers)} publishers")
 
 def seed_database():
+    """Seed the database with restaurant data from CSV files."""
     create_restaurants()
 
 if __name__ == '__main__':
